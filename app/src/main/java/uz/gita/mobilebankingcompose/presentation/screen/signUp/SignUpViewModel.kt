@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.StateFlow
 import uz.gita.mobilebankingcompose.data.source.remote.dto.auth.request.SignUpRequest
 
 
+
 interface SignUpContract {
     interface SignUpViewModel {
         val uiState: StateFlow<UiState>
@@ -12,7 +13,6 @@ interface SignUpContract {
     }
 
     sealed interface Intent {
-        class FirstName(val name: String) : Intent
         class SignUp(val signUpRequest: SignUpRequest) : Intent
     }
 
@@ -24,4 +24,6 @@ interface SignUpContract {
         val password: String = "",
         val gender: String = "0"
     )
+
+
 }

@@ -43,7 +43,7 @@ import uz.gita.mobilebankingcompose.util.PHONE_NUMBER_MASK
 fun CustomOutlinedTextField(
     value: String,
     label: String,
-    eventDispatcher: (SignUpContract.Intent) -> Unit,
+    eventDispatcher: (String) -> Unit,
     keyboardType: KeyboardType,
     imeAction: ImeAction = ImeAction.Next,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -52,6 +52,7 @@ fun CustomOutlinedTextField(
     isError: Boolean = false,
     errorMsg: String = ""
 ) {
+
     val focusManager = LocalFocusManager.current
     var hasFocus by remember { mutableStateOf(false) }
     var isHiddenPassword by remember { mutableStateOf(false) }
@@ -72,13 +73,7 @@ fun CustomOutlinedTextField(
                         text = label, color = Color(0x4D101010)
                     )
                 },
-                onValueChange = {
-                    eventDispatcher(
-                        SignUpContract.Intent.FirstName(
-                            it
-                        )
-                    )
-                },
+                onValueChange = eventDispatcher,
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .fillMaxWidth()
@@ -92,7 +87,7 @@ fun CustomOutlinedTextField(
                 }, isHiddenPassword) else null,
 
                 singleLine = true,
-                isError = isError,
+                isError = hasFocus && isError,
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color.Transparent,
@@ -111,7 +106,7 @@ fun CustomOutlinedTextField(
                 },
                     onDone = { focusManager.clearFocus() }
                 ),
-                visualTransformation = if (!isHiddenPassword) {
+                visualTransformation = if (!isHiddenPassword && keyboardType == KeyboardType.Password) {
                     PasswordVisualTransformation()
                 } else visualTransformation,
 

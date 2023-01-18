@@ -1,7 +1,5 @@
 package uz.gita.mobilebankingcompose.presentation.screen.util
 
-import android.text.Layout.Alignment
-import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,17 +7,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.Key.Companion.Back
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
@@ -41,6 +35,7 @@ import uz.gita.mobilebankingcompose.ui.theme.MobileBankingComposeTheme
 @Composable
 fun CustomVerifyOutlinedTextField(
     value: String,
+    eventDispatcher: (String) -> Unit,
     imeAction: ImeAction = ImeAction.Next
 ) {
     MobileBankingComposeTheme {
@@ -50,19 +45,14 @@ fun CustomVerifyOutlinedTextField(
                 .background(color = MaterialTheme.colorScheme.background),
         ) {
             val focusManager = LocalFocusManager.current
-//            var value by remember { mutableStateOf("") }
             OutlinedTextField(
                 value = value,
-                onValueChange = {
-                    if (it.length < 2 && it.isDigitsOnly()) {
-
-                         }
-                        if (imeAction == ImeAction.Next) {
-                            focusManager.moveFocus(FocusDirection.Next)
-                        } else {
-                            focusManager.clearFocus()
-                        }
-                },
+                onValueChange = eventDispatcher,
+//                {
+//                    if (it.length < 2 && it.isDigitsOnly()) {
+//
+//                    }
+//                },
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .padding(horizontal = 4.dp, vertical = 8.dp)
@@ -94,11 +84,11 @@ fun CustomVerifyOutlinedTextField(
 @Composable
 fun VerifyOutlinedTextPreview() {
     Row {
-        CustomVerifyOutlinedTextField("1")
-        CustomVerifyOutlinedTextField("1")
-        CustomVerifyOutlinedTextField("1")
-        CustomVerifyOutlinedTextField("1")
-        CustomVerifyOutlinedTextField("1")
-        CustomVerifyOutlinedTextField("1", imeAction = ImeAction.Done)
+//        CustomVerifyOutlinedTextField("1")
+//        CustomVerifyOutlinedTextField("1")
+//        CustomVerifyOutlinedTextField("1")
+//        CustomVerifyOutlinedTextField("1")
+//        CustomVerifyOutlinedTextField("1")
+//        CustomVerifyOutlinedTextField("1", imeAction = ImeAction.Done)
     }
 }

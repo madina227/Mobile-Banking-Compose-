@@ -92,4 +92,8 @@ dependencies {
 
     //lottie
     implementation 'com.airbnb.android:lottie-compose:5.2.0'
+
+    //MVI orbit
+    implementation("org.orbit-mvi:orbit-compose:4.3.2")
+    implementation("org.orbit-mvi:orbit-viewmodel:4.3.2")
 }

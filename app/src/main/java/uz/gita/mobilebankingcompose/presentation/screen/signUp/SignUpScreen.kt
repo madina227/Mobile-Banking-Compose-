@@ -1,37 +1,31 @@
 package uz.gita.mobilebankingcompose.presentation.screen.signUp
 
 import android.annotation.SuppressLint
-import android.widget.RadioGroup
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.androidx.AndroidScreen
 import cafe.adriel.voyager.hilt.getViewModel
 import uz.gita.mobilebankingcompose.R
+import uz.gita.mobilebankingcompose.data.source.remote.dto.auth.request.SignUpRequest
 import uz.gita.mobilebankingcompose.presentation.screen.util.CenterAlignedTopBar
-import uz.gita.mobilebankingcompose.presentation.screen.util.CustomOutlinedTextField
 import uz.gita.mobilebankingcompose.presentation.screen.util.SignItem
 import uz.gita.mobilebankingcompose.presentation.screen.util.SubmitButton
 import uz.gita.mobilebankingcompose.presentation.screen.viewModel.SignUpViewModelImpl
 import uz.gita.mobilebankingcompose.util.DATE_MASK
 import uz.gita.mobilebankingcompose.util.MaskVisualTransformation
 import uz.gita.mobilebankingcompose.util.PHONE_NUMBER_MASK
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.text.Typography
 import androidx.compose.material3.Text as Text
 
@@ -57,13 +51,27 @@ fun SignUpScreenContent(
     uiState: SignUpContract.UiState,
     eventDispatcher: (SignUpContract.Intent) -> Unit
 ) {
-//    CustomOutlinedTextField(uiState.firstName, eventDispatcher = eventDispatcher, label = "")
-//    var isEmpty by remember { mutableStateOf(true) }
     var isEnabled by remember { mutableStateOf(false) }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var dateOfBirth by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val genderOptions = listOf("Male", "Female")
+    val (selectedOption, onOptionSelected) = remember {
+        mutableStateOf(genderOptions[0])
+    }
 
     SideEffect {
-        isEnabled = uiState.firstName.length > 3 && uiState.lastName.length > 3
-                && uiState.password.length > 6 && uiState.phone.length != 9
+        isEnabled = firstName.length > 3 && lastName.length > 3
+                && password.length > 6 && phoneNumber.length == 9
+    }
+    SideEffect {
+         fun stringToLong(date: String): String {
+            val f = SimpleDateFormat("dd/MM/yyyy")
+            val d: Date = f.parse(date) as Date
+            return d.time.toString()
+        }
     }
 
     Scaffold(topBar = {
@@ -83,35 +91,42 @@ fun SignUpScreenContent(
                     .weight(1f)
             ) {
                 SignItem(
-                    value = uiState.firstName,
-                    eventDispatcher = eventDispatcher,
+                    value = firstName,
+                    eventDispatcher = {
+                        firstName = it
+                    },
                     label = stringResource(id = R.string.sign_up),
-                    isError = uiState.firstName.length >= 3,
-                    errorMsg = "firstname must be 3 or more characters"
+                    isError = firstName.length <= 3,
+                    errorMsg = "firstname must be 3 or more characters",
+                    keyboardType = KeyboardType.Text
                 )
                 SignItem(
-                    value = uiState.lastName,
-                    eventDispatcher = eventDispatcher,
+                    value = lastName,
+                    eventDispatcher = {
+                        lastName = it
+                    },
                     label = stringResource(
                         id = R.string.last_name
                     ),
-                    isError = uiState.lastName.length >= 3,
+                    isError = lastName.length <= 3,
                     errorMsg = "lastname must be 3 or more characters"
                 )
                 SignItem(
-                    value = uiState.dateOfBirth,
-                    eventDispatcher = eventDispatcher,
+                    value = dateOfBirth,
+                    eventDispatcher = {
+                        dateOfBirth = it
+                    },
                     label = stringResource(id = R.string.date_of_birth),
-                    isError = uiState.dateOfBirth.length == 8,
+                    isError = dateOfBirth.length != 8,
                     errorMsg = "wrong date format",
                     keyboardType = KeyboardType.Number,
                     visualTransformation = MaskVisualTransformation(DATE_MASK)
                 )
                 SignItem(
-                    value = uiState.phone,
-                    eventDispatcher = eventDispatcher,
+                    value = phoneNumber,
+                    eventDispatcher = { phoneNumber = it },
                     label = stringResource(id = R.string.phone_number),
-                    isError = uiState.phone.length == 9,
+                    isError = phoneNumber.length != 9,
                     errorMsg = "wrong phone number",
                     keyboardType = KeyboardType.Phone,
                     visualTransformation = MaskVisualTransformation(
@@ -120,10 +135,10 @@ fun SignUpScreenContent(
                     hasLeadingIcon = true
                 )
                 SignItem(
-                    value = uiState.password,
-                    eventDispatcher = eventDispatcher,
+                    value = password,
+                    eventDispatcher = { password = it },
                     label = stringResource(id = R.string.password),
-                    isError = uiState.password.length >= 6,
+                    isError = password.length <= 6,
                     errorMsg = "first name must be 6 or more characters",
                     keyboardType = KeyboardType.Password,
                     hasTrailingIcon = true,
@@ -133,25 +148,49 @@ fun SignUpScreenContent(
                     text = stringResource(id = R.string.gender),
                     Modifier.padding(horizontal = 24.dp)
                 )
-                RadioGroupGender()
+                RadioGroupGender(
+                    genderOptions,
+                    selectedOption,
+                    onOptionSelected
+                )
             }
-
+            val request = SignUpRequest(
+                phoneNumber,
+                password,
+                firstName,
+                lastName,
+                dateOfBirth,
+                selectedOption
+            )
             SubmitButton(
-                onClick = { /*TODO*/ },
+
+                onClick = {
+                    eventDispatcher.invoke(
+                        SignUpContract.Intent.SignUp(
+                            request
+                        )
+                    )
+                    Log.d("FFF", "screen ${request.bornDate}")
+                },
+
                 isEnabled = isEnabled,
                 text = "Submit"
+
             )
         }
     })
 }
 
 
+
+
 @Composable
-fun RadioGroupGender() {
-    val genderOptions = listOf("Male", "Female")
-    val (selectedOption, onOptionSelected) = remember {
-        mutableStateOf(genderOptions[0])
-    }
+fun RadioGroupGender(
+    genderOptions: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+
     Row {
         genderOptions.forEach { text ->
             Row(

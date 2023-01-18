@@ -63,7 +63,7 @@ fun SignInScreenContent(
                 ) {
                     SignItem(
                         value = uiState.phone,
-                        eventDispatcher = eventDispatcher,
+                        eventDispatcher = {},
                         label = stringResource(id = R.string.phone_number),
                         isError = uiState.phone.length == 9,
                         errorMsg = "wrong phone number",
@@ -75,7 +75,7 @@ fun SignInScreenContent(
                     )
                     SignItem(
                         value = uiState.password,
-                        eventDispatcher = eventDispatcher,
+                        eventDispatcher = {  },
                         label = stringResource(id = R.string.password),
                         isError = uiState.password.length >= 6,
                         errorMsg = "first name must be 6 or more characters",

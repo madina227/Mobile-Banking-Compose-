@@ -19,7 +19,7 @@ import uz.gita.mobilebankingcompose.presentation.screen.signUp.SignUpContract
 @Composable
 fun SignItem(
     value: String,
-    eventDispatcher: (SignUpContract.Intent) -> Unit,
+    eventDispatcher: (String) -> Unit,
     label: String,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,

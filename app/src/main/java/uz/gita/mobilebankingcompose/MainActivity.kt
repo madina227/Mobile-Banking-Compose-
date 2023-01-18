@@ -1,29 +1,44 @@
 package uz.gita.mobilebankingcompose
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Surface
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import uz.gita.mobilebankingcompose.presentation.screen.verify.VerifyScreen
-//import uz.gita.mobilebankingcompose.presentation.screen.signUp.SignUpScreen
+import androidx.compose.runtime.LaunchedEffect
+import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.navigator.Navigator
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
+import uz.gita.mobilebankingcompose.navigation.AppNavigator
+import uz.gita.mobilebankingcompose.presentation.screen.splash.SplashScreen
 import uz.gita.mobilebankingcompose.ui.theme.MobileBankingComposeTheme
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var appNavigator: AppNavigator
+
+    @SuppressLint(
+        "FlowOperatorInvokedInComposition",
+        "CoroutineCreationDuringComposition"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MobileBankingComposeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-//                    SignUpScreen()
-
+                Log.d("TTT", "MainActivity is running")
+                Navigator(SplashScreen()) { navigator ->
+                    LaunchedEffect(key1 = navigator) {
+                        appNavigator.navigationFlow
+                            .onEach {
+                                it(navigator)
+                            }.collect()
+                    }
+                    CurrentScreen()
                 }
             }
         }

@@ -1,5 +1,6 @@
 package uz.gita.mobilebankingcompose.presentation.screen.privacyPolicy
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableState
@@ -22,9 +23,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.androidx.AndroidScreen
+import cafe.adriel.voyager.hilt.getViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import org.orbitmvi.orbit.compose.collectAsState
 import uz.gita.mobilebankingcompose.R
+import uz.gita.mobilebankingcompose.presentation.screen.splash.SplashViewModel
 import uz.gita.mobilebankingcompose.presentation.screen.util.CenterAlignedTopBar
 import uz.gita.mobilebankingcompose.presentation.screen.util.SubmitButton
+import uz.gita.mobilebankingcompose.presentation.screen.viewModel.PrivacyViewModelImpl
+
+import uz.gita.mobilebankingcompose.presentation.screen.privacyPolicy.PrivacyViewModel.PrivacyUIState
+import uz.gita.mobilebankingcompose.presentation.screen.privacyPolicy.PrivacyViewModel.PrivacyIntent
 
 /**
  * Created by Madina Agzamova
@@ -34,13 +43,19 @@ import uz.gita.mobilebankingcompose.presentation.screen.util.SubmitButton
 class PrivacyPolicyScreen : AndroidScreen() {
     @Composable
     override fun Content() {
-        TODO("Not yet implemented")
+        Log.d("TTT", "Privacy is running")
+        val viewModel: PrivacyViewModel = getViewModel<PrivacyViewModelImpl>()
+        val uiState = viewModel.collectAsState().value
+        PrivacyPolicyScreenContent(uiState, viewModel::onEventDispatcher)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivacyPolicyScreenContent() {
+fun PrivacyPolicyScreenContent(
+    uiState: PrivacyUIState,
+    onEventDispatcher: (PrivacyIntent) -> Unit
+) {
     val scroll = rememberScrollState()
     var isAgree by remember { mutableStateOf(false) }
     Scaffold(topBar = {
@@ -87,7 +102,9 @@ fun PrivacyPolicyScreenContent() {
                 Text(text = "I agree with all terms")
             }
             SubmitButton(
-                onClick = { /*TODO*/ }, isEnabled = isAgree, text = "Enter"
+                onClick = { onEventDispatcher.invoke(PrivacyIntent.OpenNextScreen) },
+                isEnabled = isAgree,
+                text = "Enter"
             )
         }
 
@@ -97,5 +114,5 @@ fun PrivacyPolicyScreenContent() {
 @Preview
 @Composable
 fun PrivacyPreview() {
-    PrivacyPolicyScreenContent()
+//    PrivacyPolicyScreenContent()
 }

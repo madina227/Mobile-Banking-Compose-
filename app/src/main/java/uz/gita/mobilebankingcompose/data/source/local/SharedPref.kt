@@ -12,8 +12,13 @@ import javax.inject.Singleton
 
 @Singleton
 class SharedPref @Inject constructor(@ApplicationContext private val context: Context) {
-    private val sharedPreferences = context.getSharedPreferences("Local_shp", Context.MODE_PRIVATE)
+    private val sharedPreferences =
+        context.getSharedPreferences("Local_shp", Context.MODE_PRIVATE)
     private val editor = sharedPreferences.edit()
+
+    var isAgreeWithPrivacy: Boolean
+        get() = sharedPreferences.getBoolean("isAgree", false)
+        set(value) = editor.putBoolean("isAgree", value).apply()
 
     var tempToken: String
         get() = sharedPreferences.getString("tempToken", "")!!

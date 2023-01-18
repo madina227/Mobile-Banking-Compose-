@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import uz.gita.mobilebankingcompose.data.repository.AuthRepositoryImpl
-import uz.gita.mobilebankingcompose.domain.repo.AuthRepository
+import uz.gita.mobilebankingcompose.di.domain.repo.AuthRepository
 import javax.inject.Singleton
 
 /**
@@ -18,5 +18,5 @@ import javax.inject.Singleton
 interface RepositoryModule {
 
     @Binds
-fun repositoryModule(impl:AuthRepositoryImpl):AuthRepository
+fun repositoryModule(impl:AuthRepositoryImpl): AuthRepository
 }

@@ -9,7 +9,7 @@ import uz.gita.mobilebankingcompose.data.source.local.SharedPref
 import uz.gita.mobilebankingcompose.data.source.remote.dto.auth.request.SignUpRequest
 import uz.gita.mobilebankingcompose.data.source.remote.dto.auth.request.SignUpVerifyRequest
 import uz.gita.mobilebankingcompose.data.source.remote.dto.service.AuthApi
-import uz.gita.mobilebankingcompose.domain.repo.AuthRepository
+import uz.gita.mobilebankingcompose.di.domain.repo.AuthRepository
 import uz.gita.mobilebankingcompose.util.ResultData
 import uz.gita.mobilebankingcompose.util.mLog
 import javax.inject.Inject
@@ -25,6 +25,14 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
     private val sharedPref: SharedPref
 ) : AuthRepository {
+
+    override fun isAgreeWithPrivacy(): Boolean = sharedPref.isAgreeWithPrivacy
+
+    override fun disablePrivacy() {
+        sharedPref.isAgreeWithPrivacy = true
+    }
+
+
     override fun signUp(signUpRequest: SignUpRequest): Flow<ResultData<Unit>> =
         flow<ResultData<Unit>> {
             val response = authApi.signUp(signUpRequest)
